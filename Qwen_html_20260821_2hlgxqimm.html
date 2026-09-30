@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Al-Hadiid - Peminjaman Barang Sekolah</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+  body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); min-height:100vh; color:#fff; }
+  header { background: rgba(0,0,0,0.4); padding:15px 30px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 10px rgba(0,0,0,0.3); position:sticky; top:0; z-index:100; }
+  header h1 { font-size:22px; color:#f5c518; letter-spacing:1px; }
+  header h1 span { color:#fff; }
+  .user-info { display:flex; gap:10px; align-items:center; }
+  .user-info span { font-size:14px; }
+  button { cursor:pointer; border:none; padding:10px 18px; border-radius:8px; font-weight:600; transition:all .2s; }
+  .btn-primary { background:#f5c518; color:#0f2027; }
+  .btn-primary:hover { background:#ffd84a; transform:translateY(-2px); }
+  .btn-danger { background:#e74c3c; color:#fff; }
+  .btn-danger:hover { background:#ff5e4d; }
+  .btn-secondary { background:#34495e; color:#fff; }
+  .btn-secondary:hover { background:#4a6278; }
+
+  .container { max-width:1200px; margin:30px auto; padding:0 20px; }
+  .auth-box { max-width:420px; margin:60px auto; background:rgba(255,255,255,0.08); backdrop-filter:blur(10px); padding:35px; border-radius:16px; border:1px solid rgba(255,255,255,0.15); }
+  .auth-box h2 { text-align:center; margin-bottom:8px; color:#f5c518; }
+  .auth-box .subtitle { text-align:center; font-size:13px; color:#bbb; margin-bottom:20px; }
+  .auth-box input { width:100%; padding:12px; margin-bottom:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.1); color:#fff; font-size:14px; }
+  .auth-box input::placeholder { color:#bbb; }
+  .auth-box button.submit { width:100%; padding:12px; margin-top:5px; }
+  .auth-switch { text-align:center; margin-top:20px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.1); font-size:14px; color:#ccc; }
+  .auth-switch a { color:#f5c518; cursor:pointer; text-decoration:underline; font-weight:600; }
+  .auth-switch a:hover { color:#ffd84a; }
+
+  .tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .tab { padding:10px 18px; background:rgba(255,255,255,0.1); border-radius:25px; cursor:pointer; font-size:14px; transition:.2s; }
+  .tab.active { background:#f5c518; color:#0f2027; font-weight:600; }
+  .tab:hover:not(.active) { background:rgba(255,255,255,0.2); }
+
+  .search-bar { width:100%; padding:12px 18px; border-radius:30px; border:none; background:rgba(255,255,255,0.15); color:#fff; font-size:15px; margin-bottom:20px; }
+  .search-bar::placeholder { color:#ccc; }
+  .search-bar:focus { outline:2px solid #f5c518; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:18px; }
+  .card { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:18px; transition:.2s; }
+  .card:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.4); border-color:#f5c518; }
+  .card .emoji { font-size:50px; text-align:center; margin-bottom:10px; }
+  .card h3 { font-size:16px; margin-bottom:5px; }
+  .card .code { font-size:12px; color:#f5c518; font-family:monospace; margin-bottom:8px; }
+  .card .stock { font-size:13px; margin-bottom:10px; }
+  .stock.available { color:#2ecc71; }
+  .stock.empty { color:#e74c3c; }
+  .card button { width:100%; }
+
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center; z-index:200; padding:20px; }
+  .modal-bg.show { display:flex; }
+  .modal { background:#203a43; border-radius:16px; padding:25px; max-width:450px; width:100%; border:1px solid rgba(255,255,255,0.2); max-height:90vh; overflow-y:auto; }
+  .modal h3 { color:#f5c518; margin-bottom:15px; }
+  .modal label { display:block; margin:10px 0 5px; font-size:14px; }
+  .modal input { width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.1); color:#fff; }
+  .modal-actions { display:flex; gap:10px; margin-top:18px; }
+  .modal-actions button { flex:1; }
+
+  .list-item { background:rgba(255,255,255,0.08); border-radius:12px; padding:15px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-left:4px solid #f5c518; }
+  .list-item.waiting { border-left-color:#e67e22; }
+  .list-item.history { border-left-color:#3498db; }
+  .list-item .info { flex:1; min-width:200px; }
+  .list-item .info h4 { margin-bottom:5px; }
+  .list-item .info p { font-size:13px; color:#ccc; margin-top:3px; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; margin-left:5px; }
+  .badge-waiting { background:#e67e22; }
+  .badge-active { background:#2ecc71; color:#000; }
+  .badge-returned { background:#3498db; }
+
+  .empty-state { text-align:center; padding:40px; color:#aaa; }
+  .empty-state .big { font-size:60px; margin-bottom:10px; }
+
+  .package-card { background:linear-gradient(135deg, #667eea, #764ba2); padding:20px; border-radius:14px; margin-bottom:15px; transition:.2s; }
+  .package-card:hover { transform:translateY(-3px); }
+  .package-card h3 { margin-bottom:8px; }
+  .package-card .items { font-size:13px; opacity:.9; margin-top:8px; }
+  .package-card button { margin-top:12px; }
+
+  .toast { position:fixed; top:80px; right:20px; background:#2ecc71; color:#fff; padding:15px 25px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.3); z-index:300; transform:translateX(500px); transition:.4s; max-width:350px; }
+  .toast.show { transform:translateX(0); }
+  .toast.error { background:#e74c3c; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏫 Al-<span>Hadiid</span></h1>
+  <div class="user-info" id="userInfo"></div>
+</header>
+
+<div id="authView" class="container"></div>
+<div id="mainView" class="container" style="display:none;"></div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== DATA BARANG ==========
+const ITEMS = [
+  { code:'ELK-001', name:'Laptop', emoji:'💻', stock:5, category:'Elektronik' },
+  { code:'ELK-002', name:'Proyektor', emoji:'📽️', stock:3, category:'Elektronik' },
+  { code:'ELK-003', name:'Speaker Aktif', emoji:'🔊', stock:4, category:'Elektronik' },
+  { code:'ELK-004', name:'Kabel HDMI', emoji:'🔌', stock:6, category:'Elektronik' },
+  { code:'ELK-005', name:'Microphone', emoji:'🎤', stock:3, category:'Elektronik' },
+  { code:'ELK-006', name:'Kamera', emoji:'📷', stock:2, category:'Elektronik' },
+  { code:'ELK-007', name:'Tablet', emoji:'📱', stock:4, category:'Elektronik' },
+  { code:'OLR-001', name:'Bola Sepak', emoji:'⚽', stock:5, category:'Olahraga' },
+  { code:'OLR-002', name:'Bola Basket', emoji:'🏀', stock:4, category:'Olahraga' },
+  { code:'OLR-003', name:'Raket Badminton', emoji:'🏸', stock:6, category:'Olahraga' },
+  { code:'OLR-004', name:'Net Voli', emoji:'🏐', stock:2, category:'Olahraga' },
+  { code:'OLR-005', name:'Matras', emoji:'🧘', stock:4, category:'Olahraga' },
+  { code:'LAB-001', name:'Mikroskop', emoji:'🔬', stock:3, category:'Laboratorium' },
+  { code:'LAB-002', name:'Teleskop', emoji:'🔭', stock:2, category:'Laboratorium' },
+  { code:'LAB-003', name:'Globe', emoji:'🌍', stock:3, category:'Laboratorium' },
+  { code:'SEN-001', name:'Gitar', emoji:'🎸', stock:3, category:'Seni' },
+  { code:'SEN-002', name:'Pianika', emoji:'🎹', stock:5, category:'Seni' },
+  { code:'SEN-003', name:'Drum', emoji:'🥁', stock:2, category:'Seni' },
+  { code:'SEN-004', name:'Biola', emoji:'🎻', stock:2, category:'Seni' },
+  { code:'ART-001', name:'Kanvas Lukis', emoji:'🖼️', stock:4, category:'Seni Rupa' },
+  { code:'ART-002', name:'Cat Air Set', emoji:'🎨', stock:5, category:'Seni Rupa' },
+  { code:'LIB-001', name:'Buku Ensiklopedia', emoji:'📚', stock:8, category:'Perpustakaan' },
+  { code:'LIB-002', name:'Kamus Besar', emoji:'📖', stock:4, category:'Perpustakaan' },
+  { code:'ALP-001', name:'Alat Peraga Matematika', emoji:'📐', stock:3, category:'Alat Pelajaran' },
+  { code:'ALP-002', name:'Peta Dunia', emoji:'🗺️', stock:2, category:'Alat Pelajaran' },
+];
+
+const PACKAGES = [
+  { id:'PKG-PRESENTASI', name:'📊 Paket Presentasi', desc:'Cocok untuk presentasi kelas', items:['ELK-001','ELK-002','ELK-004','ELK-003'] },
+  { id:'PKG-OLAHRAGA', name:'⚽ Paket Olahraga', desc:'Untuk kegiatan olahraga', items:['OLR-001','OLR-002','OLR-003'] },
+  { id:'PKG-LAB', name:'🔬 Paket Laboratorium', desc:'Untuk praktikum sains', items:['LAB-001','LAB-002','LAB-003'] },
+  { id:'PKG-MUSIK', name:'🎸 Paket Musik', desc:'Untuk pentas seni', items:['SEN-001','SEN-002','SEN-003'] },
+  { id:'PKG-ACARA', name:'🎉 Paket Acara Besar', desc:'Untuk acara sekolah', items:['ELK-002','ELK-003','ELK-005','ELK-006'] },
+];
+
+// ========== STORAGE ==========
+const DB = {
+  getUsers: () => JSON.parse(localStorage.getItem('ah_users') || '[]'),
+  saveUsers: (u) => localStorage.setItem('ah_users', JSON.stringify(u)),
+  getCurrent: () => JSON.parse(localStorage.getItem('ah_current') || 'null'),
+  setCurrent: (u) => localStorage.setItem('ah_current', JSON.stringify(u)),
+  logout: () => localStorage.removeItem('ah_current'),
+  getLoans: () => JSON.parse(localStorage.getItem('ah_loans') || '[]'),
+  saveLoans: (l) => localStorage.setItem('ah_loans', JSON.stringify(l)),
+};
+
+// ========== STATE ==========
+let currentUser = DB.getCurrent();
+let authMode = 'login'; // 'login' | 'register'
+let activeTab = 'catalog';
+
+// ========== UTIL ==========
+function toast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3500);
+}
+function formatDate(d) {
+  return new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+}
+function formatDateTime(d) {
+  return new Date(d).toLocaleString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function getItem(code) { return ITEMS.find(i => i.code === code); }
+function getAvailableStock(code) {
+  const item = getItem(code);
+  const activeLoans = DB.getLoans().filter(l => l.itemCode === code && l.status === 'active');
+  return item.stock - activeLoans.length;
+}
+
+// ========== AUTH ==========
+function renderAuth() {
+  document.getElementById('authView').style.display = 'block';
+  document.getElementById('mainView').style.display = 'none';
+  document.getElementById('userInfo').innerHTML = ''; // nama user hilang saat logout
+
+  const box = document.getElementById('authView');
+
+  if (authMode === 'register') {
+    box.innerHTML = `
+      <div class="auth-box">
+        <h2>📝 Daftar Akun Baru</h2>
+        <p class="subtitle">Buat akun untuk mulai meminjam barang</p>
+        <input id="regName" placeholder="Nama Lengkap" />
+        <input id="regUser" placeholder="Username" />
+        <input id="regPass" type="password" placeholder="Password" />
+        <input id="regPass2" type="password" placeholder="Konfirmasi Password" />
+        <input id="regRole" placeholder="Kelas / Jabatan (misal: XI IPA 1 / Guru)" />
+        <button class="btn-primary submit" onclick="doRegister()">Daftar Sekarang</button>
+        <div class="auth-switch">
+          Sudah punya akun? <a onclick="switchAuth('login')">Login di sini</a>
+        </div>
+      </div>
+    `;
+  } else {
+    box.innerHTML = `
+      <div class="auth-box">
+        <h2>🔐 Login</h2>
+        <p class="subtitle">Masuk ke akun Al-Hadiid Anda</p>
+        <input id="logUser" placeholder="Username" />
+        <input id="logPass" type="password" placeholder="Password" />
+        <button class="btn-primary submit" onclick="doLogin()">Masuk</button>
+        <div class="auth-switch">
+          Belum punya akun? <a onclick="switchAuth('register')">Daftar akun baru</a>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function switchAuth(mode) {
+  authMode = mode;
+  renderAuth();
+}
+
+function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const user = document.getElementById('regUser').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const role = document.getElementById('regRole').value.trim();
+
+  if (!name || !user || !pass || !pass2 || !role) return toast('Lengkapi semua data!', true);
+  if (user.length < 3) return toast('Username minimal 3 karakter!', true);
+  if (pass.length < 4) return toast('Password minimal 4 karakter!', true);
+  if (pass !== pass2) return toast('Konfirmasi password tidak cocok!', true);
+
+  const users = DB.getUsers();
+  if (users.find(u => u.username === user)) return toast('Username sudah dipakai!', true);
+
+  const newUser = { name, username:user, password:pass, role, createdAt: new Date().toISOString() };
+  users.push(newUser);
+  DB.saveUsers(users);
+  toast('✅ Akun berhasil dibuat! Silakan login.');
+  authMode = 'login';
+  renderAuth();
+}
+
+function doLogin() {
+  const user = document.getElementById('logUser').value.trim();
+  const pass = document.getElementById('logPass').value;
+  if (!user || !pass) return toast('Masukkan username & password!', true);
+
+  const users = DB.getUsers();
+  const found = users.find(u => u.username === user && u.password === pass);
+  if (!found) return toast('Username atau password salah!', true);
+
+  currentUser = found;
+  DB.setCurrent(found);
+  toast(`👋 Selamat datang, ${found.name}!`);
+  renderMain();
+}
+
+function doLogout() {
+  if (!confirm('Yakin ingin keluar?')) return;
+  DB.logout();
+  currentUser = null;
+  authMode = 'login'; // kembali ke halaman login
+  activeTab = 'catalog';
+  renderAuth();
+  toast('Anda telah logout');
+}
+
+// ========== MAIN ==========
+function renderMain() {
+  document.getElementById('authView').style.display = 'none';
+  document.getElementById('mainView').style.display = 'block';
+  document.getElementById('userInfo').innerHTML = `
+    <span>👤 ${currentUser.name} <small style="opacity:.7;">(${currentUser.role})</small></span>
+    <button class="btn-danger" onclick="doLogout()">🚪 Logout</button>
+  `;
+  renderContent();
+}
+
+function renderContent() {
+  const view = document.getElementById('mainView');
+  const loans = DB.getLoans().filter(l => l.username === currentUser.username);
+  const active = loans.filter(l => l.status === 'active');
+  const waiting = loans.filter(l => l.status === 'waiting');
+  const history = loans.filter(l => l.status === 'returned');
+
+  view.innerHTML = `
+    <div class="tabs">
+      <div class="tab ${activeTab==='catalog'?'active':''}" onclick="switchTab('catalog')">📦 Katalog</div>
+      <div class="tab ${activeTab==='packages'?'active':''}" onclick="switchTab('packages')">🎁 Paket</div>
+      <div class="tab ${activeTab==='active'?'active':''}" onclick="switchTab('active')">📋 Dipinjam (${active.length})</div>
+      <div class="tab ${activeTab==='waiting'?'active':''}" onclick="switchTab('waiting')">⏳ Waiting List (${waiting.length})</div>
+      <div class="tab ${activeTab==='history'?'active':''}" onclick="switchTab('history')">📜 Riwayat (${history.length})</div>
+    </div>
+    <div id="tabContent"></div>
+  `;
+
+  if (activeTab === 'catalog') renderCatalog();
+  else if (activeTab === 'packages') renderPackages();
+  else if (activeTab === 'active') renderActive();
+  else if (activeTab === 'waiting') renderWaiting();
+  else if (activeTab === 'history') renderHistory();
+}
+
+function switchTab(t) { activeTab = t; renderContent(); }
+
+// ========== KATALOG ==========
+function renderCatalog() {
+  const c = document.getElementById('tabContent');
+  c.innerHTML = `
+    <input class="search-bar" id="searchInput" placeholder="🔍 Cari nama atau kode barang (contoh: ELK-001, Laptop, Olahraga)..." oninput="filterCatalog()" />
+    <div class="grid" id="itemGrid"></div>
+  `;
+  filterCatalog();
+}
+
+function filterCatalog() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  const grid = document.getElementById('itemGrid');
+  const filtered = ITEMS.filter(i =>
+    i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || i.category.toLowerCase().includes(q)
+  );
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="big">🔍</div>Tidak ada barang ditemukan</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(i => {
+    const avail = getAvailableStock(i.code);
+    const stockClass = avail > 0 ? 'available' : 'empty';
+    const waitingCount = DB.getLoans().filter(l=>l.itemCode===i.code && l.status==='waiting').length;
+    const stockText = avail > 0 ? `Stok tersedia: ${avail}/${i.stock}` : `Stok habis (antrian: ${waitingCount})`;
+    return `
+      <div class="card">
+        <div class="emoji">${i.emoji}</div>
+        <h3>${i.name}</h3>
+        <div class="code">Kode: ${i.code}</div>
+        <div class="stock ${stockClass}">${stockText}</div>
+        <button class="btn-primary" onclick="openBorrowModal('${i.code}')">Pinjam</button>
+      </div>
+    `;
+  }).join('');
+}
+
+// ========== MODAL PINJAM ==========
+function openBorrowModal(code) {
+  const item = getItem(code);
+  const avail = getAvailableStock(code);
+  const today = new Date().toISOString().split('T')[0];
+  const nextWeek = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
+
+  document.getElementById('modalContent').innerHTML = `
+    <h3>${item.emoji} Pinjam: ${item.name}</h3>
+    <p style="font-size:13px;color:#ccc;">Kode: ${item.code} | Stok tersedia: ${avail}</p>
+    <label>Tanggal Mulai Pinjam</label>
+    <input type="date" id="startDate" value="${today}" min="${today}" />
+    <label>Tanggal Selesai (Kembali)</label>
+    <input type="date" id="endDate" value="${nextWeek}" min="${today}" />
+    <label>Keterangan</label>
+    <input type="text" id="purpose" placeholder="Contoh: Presentasi kelas XI IPA 1" />
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Batal</button>
+      <button class="btn-primary" onclick="confirmBorrow('${code}')">Konfirmasi</button>
+    </div>
+  `;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function openPackageModal(pkgId) {
+  const pkg = PACKAGES.find(p => p.id === pkgId);
+  const today = new Date().toISOString().split('T')[0];
+  const nextWeek = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
+  const itemsHtml = pkg.items.map(c => {
+    const it = getItem(c);
+    return `<li>${it.emoji} ${it.name} (${it.code})</li>`;
+  }).join('');
+
+  document.getElementById('modalContent').innerHTML = `
+    <h3>${pkg.name}</h3>
+    <p style="font-size:13px;color:#ccc;">${pkg.desc}</p>
+    <p style="margin:10px 0;font-size:14px;">Barang dalam paket:</p>
+    <ul style="margin-left:20px;font-size:14px;">${itemsHtml}</ul>
+    <label>Tanggal Mulai Pinjam</label>
+    <input type="date" id="startDate" value="${today}" min="${today}" />
+    <label>Tanggal Selesai (Kembali)</label>
+    <input type="date" id="endDate" value="${nextWeek}" min="${today}" />
+    <label>Keterangan</label>
+    <input type="text" id="purpose" placeholder="Contoh: Acara perpisahan kelas XII" />
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Batal</button>
+      <button class="btn-primary" onclick="confirmPackage('${pkgId}')">Pinjam Paket</button>
+    </div>
+  `;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
+
+function confirmBorrow(code) {
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  const purpose = document.getElementById('purpose').value || '-';
+  if (!startDate || !endDate) return toast('Lengkapi tanggal!', true);
+  if (new Date(endDate) < new Date(startDate)) return toast('Tanggal selesai harus setelah tanggal mulai!', true);
+
+  const avail = getAvailableStock(code);
+  const status = avail > 0 ? 'active' : 'waiting';
+  const loans = DB.getLoans();
+  loans.push({
+    id: 'LN-' + Date.now(),
+    username: currentUser.username,
+    userName: currentUser.name,
+    itemCode: code,
+    startDate, endDate, purpose,
+    status,
+    createdAt: new Date().toISOString()
+  });
+  DB.saveLoans(loans);
+  closeModal();
+
+  const item = getItem(code);
+  if (status === 'active') {
+    toast(`✅ Sukses! ${item.name} dipinjam sampai ${formatDate(endDate)}`);
+  } else {
+    toast(`⏳ Stok habis. Anda masuk waiting list sampai ${formatDate(endDate)}`);
+  }
+  renderContent();
+}
+
+function confirmPackage(pkgId) {
+  const pkg = PACKAGES.find(p => p.id === pkgId);
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  const purpose = document.getElementById('purpose').value || '-';
+  if (!startDate || !endDate) return toast('Lengkapi tanggal!', true);
+
+  const loans = DB.getLoans();
+  pkg.items.forEach(code => {
+    const avail = getAvailableStock(code);
+    loans.push({
+      id: 'LN-' + Date.now() + '-' + code,
+      username: currentUser.username,
+      userName: currentUser.name,
+      itemCode: code,
+      startDate, endDate, purpose: `[${pkg.name}] ${purpose}`,
+      status: avail > 0 ? 'active' : 'waiting',
+      createdAt: new Date().toISOString()
+    });
+  });
+  DB.saveLoans(loans);
+  closeModal();
+  toast(`✅ Paket "${pkg.name}" berhasil dipinjam!`);
+  renderContent();
+}
+
+// ========== PAKET ==========
+function renderPackages() {
+  const c = document.getElementById('tabContent');
+  c.innerHTML = `<h2 style="margin-bottom:15px;">🎁 Paket Peminjaman</h2>` +
+    PACKAGES.map(p => {
+      const itemsList = p.items.map(c => {
+        const it = getItem(c);
+        return `${it.emoji} ${it.name}`;
+      }).join(' • ');
+      return `
+        <div class="package-card">
+          <h3>${p.name}</h3>
+          <p style="font-size:14px;opacity:.9;">${p.desc}</p>
+          <div class="items">📦 ${itemsList}</div>
+          <button class="btn-primary" onclick="openPackageModal('${p.id}')">Pinjam Paket</button>
+        </div>
+      `;
+    }).join('');
+}
+
+// ========== LIST ==========
+function renderActive() {
+  const loans = DB.getLoans().filter(l => l.username === currentUser.username && l.status === 'active');
+  const c = document.getElementById('tabContent');
+  if (loans.length === 0) {
+    c.innerHTML = `<div class="empty-state"><div class="big">📭</div>Belum ada barang yang dipinjam</div>`;
+    return;
+  }
+  c.innerHTML = loans.map(l => {
+    const it = getItem(l.itemCode);
+    return `
+      <div class="list-item">
+        <div style="font-size:40px;">${it.emoji}</div>
+        <div class="info">
+          <h4>${it.name} <span class="badge badge-active">AKTIF</span></h4>
+          <p>Kode: ${it.code}</p>
+          <p>📅 Dipinjam: ${formatDate(l.startDate)}</p>
+          <p>📅 Harus kembali: ${formatDate(l.endDate)}</p>
+          <p>📝 ${l.purpose}</p>
+        </div>
+        <button class="btn-primary" onclick="returnItem('${l.id}')">✅ Kembalikan</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderWaiting() {
+  const loans = DB.getLoans().filter(l => l.username === currentUser.username && l.status === 'waiting');
+  const c = document.getElementById('tabContent');
+  if (loans.length === 0) {
+    c.innerHTML = `<div class="empty-state"><div class="big">✨</div>Tidak ada antrian waiting list</div>`;
+    return;
+  }
+  c.innerHTML = loans.map(l => {
+    const it = getItem(l.itemCode);
+    return `
+      <div class="list-item waiting">
+        <div style="font-size:40px;">${it.emoji}</div>
+        <div class="info">
+          <h4>${it.name} <span class="badge badge-waiting">WAITING LIST</span></h4>
+          <p>Kode: ${it.code}</p>
+          <p>⏳ Menunggu barang tersedia</p>
+          <p>📅 Akan dipinjam: ${formatDate(l.startDate)} - ${formatDate(l.endDate)}</p>
+          <p>📝 ${l.purpose}</p>
+        </div>
+        <button class="btn-danger" onclick="cancelLoan('${l.id}')">Batalkan</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderHistory() {
+  const loans = DB.getLoans().filter(l => l.username === currentUser.username && l.status === 'returned');
+  const c = document.getElementById('tabContent');
+  if (loans.length === 0) {
+    c.innerHTML = `<div class="empty-state"><div class="big">📜</div>Belum ada riwayat peminjaman</div>`;
+    return;
+  }
+  c.innerHTML = loans.map(l => {
+    const it = getItem(l.itemCode);
+    return `
+      <div class="list-item history">
+        <div style="font-size:40px;">${it.emoji}</div>
+        <div class="info">
+          <h4>${it.name} <span class="badge badge-returned">DIKEMBALIKAN</span></h4>
+          <p>Kode: ${it.code}</p>
+          <p>📅 Dipinjam: ${formatDate(l.startDate)} → ${formatDate(l.endDate)}</p>
+          <p>✅ Dikembalikan: <b>${formatDateTime(l.returnedAt)}</b></p>
+          <p>📝 ${l.purpose}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function returnItem(id) {
+  if (!confirm('Yakin ingin mengembalikan barang ini?')) return;
+  const loans = DB.getLoans();
+  const loan = loans.find(l => l.id === id);
+  if (!loan) return;
+  loan.status = 'returned';
+  loan.returnedAt = new Date().toISOString();
+  DB.saveLoans(loans);
+
+  // Aktifkan waiting list otomatis
+  const waitingList = loans.filter(l => l.itemCode === loan.itemCode && l.status === 'waiting')
+    .sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+  if (waitingList.length > 0) {
+    waitingList[0].status = 'active';
+    DB.saveLoans(loans);
+    toast(`✅ Dikembalikan! Waiting list untuk ${getItem(loan.itemCode).name} otomatis diaktifkan.`);
+  } else {
+    toast(`✅ Barang berhasil dikembalikan!`);
+  }
+  renderContent();
+}
+
+function cancelLoan(id) {
+  if (!confirm('Batalkan antrian waiting list ini?')) return;
+  const loans = DB.getLoans().filter(l => l.id !== id);
+  DB.saveLoans(loans);
+  toast('Antrian dibatalkan');
+  renderContent();
+}
+
+// ========== INIT ==========
+if (currentUser) renderMain();
+else renderAuth();
+</script>
+</body>
+</html>
