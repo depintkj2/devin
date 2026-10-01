@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Generator Kop & Surat Resmi | SMK Al-Hadiid 1 Cileungsi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js library for true PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        royal: {
+                            50: '#f0f4ff',
+                            100: '#e0e7ff',
+                            600: '#4f46e5',
+                            800: '#3730a3',
+                            900: '#1e1b4b',
+                        },
+                        gold: {
+                            500: '#d4af37',
+                            600: '#aa8c2c',
+                            700: '#8c7322'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased selection:bg-royal-600 selection:text-white min-h-screen flex flex-col justify-between">
+
+    <header class="sticky top-0 z-50 glass-card border-b border-slate-200 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-royal-900 to-royal-600 flex items-center justify-center text-white shadow-lg shadow-royal-900/20">
+                    <i class="fa-solid fa-file-signature text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-gold-600 block">Official Portal</span>
+                    <h1 class="font-serif text-lg sm:text-xl font-bold tracking-tight text-slate-900">Kop & Surat <span class="text-royal-600">Al-Hadiid</span></h1>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 bg-slate-200/80 p-1.5 rounded-full border border-slate-300">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-white text-royal-900 shadow-sm">
+                    <i class="fa-solid fa-house mr-2"></i> Beranda
+                </button>
+                <button onclick="switchTab('generator')" id="nav-generator" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-slate-700 hover:text-slate-900">
+                    <i class="fa-solid fa-pen-nib mr-2"></i> Generator Surat
+                </button>
+                <button onclick="switchTab('templates')" id="nav-templates" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-slate-700 hover:text-slate-900">
+                    <i class="fa-solid fa-layer-group mr-2"></i> Koleksi Kop
+                </button>
+                <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-slate-700 hover:text-slate-900">
+                    <i class="fa-solid fa-id-badge mr-2"></i> Profil Pembuat
+                </button>
+            </nav>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl bg-slate-200 text-slate-800 hover:bg-slate-300 focus:outline-none">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-4 space-y-2 shadow-lg">
+            <button onclick="switchTab('home'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-bold text-slate-800 hover:bg-royal-50 hover:text-royal-600 flex items-center">
+                <i class="fa-solid fa-house mr-3 w-5"></i> Beranda
+            </button>
+            <button onclick="switchTab('generator'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-bold text-slate-800 hover:bg-royal-50 hover:text-royal-600 flex items-center">
+                <i class="fa-solid fa-pen-nib mr-3 w-5"></i> Generator Surat
+            </button>
+            <button onclick="switchTab('templates'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-bold text-slate-800 hover:bg-royal-50 hover:text-royal-600 flex items-center">
+                <i class="fa-solid fa-layer-group mr-3 w-5"></i> Koleksi Kop
+            </button>
+            <button onclick="switchTab('profile'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-bold text-slate-800 hover:bg-royal-50 hover:text-royal-600 flex items-center">
+                <i class="fa-solid fa-id-badge mr-3 w-5"></i> Profil Pembuat
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <section id="tab-home" class="tab-content space-y-12">
+            <!-- Hero Banner with High Contrast Text -->
+            <div class="relative overflow-hidden rounded-3xl bg-slate-950 text-white p-8 sm:p-12 lg:p-16 shadow-2xl border border-slate-800">
+                <div class="absolute -right-10 -bottom-10 w-96 h-96 bg-royal-600/30 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-10 -top-10 w-80 h-80 bg-gold-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 max-w-3xl space-y-6">
+                    <div class="inline-flex items-center space-x-2 bg-royal-900 px-4 py-2 rounded-full border border-royal-700 text-xs sm:text-sm font-semibold text-gold-400">
+                        <i class="fa-solid fa-award"></i>
+                        <span>Resmi & Standar Administrasi Sekolah</span>
+                    </div>
+                    <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-white">
+                        Portal Layanan & Standarisasi <span class="text-gold-400 underline decoration-gold-500/50">Kop Surat</span> SMK Al-Hadiid 1
+                    </h1>
+                    <p class="text-slate-100 text-base sm:text-lg leading-relaxed font-normal">
+                        Platform administrasi digital terpadu yang menghadirkan standarisasi kop surat resmi instansi pendidikan, mempermudah pembuatan dokumen perizinan, surat keterangan, dan pengumuman dengan presisi tinggi dan elegan.
+                    </p>
+                    <div class="pt-4 flex flex-wrap gap-4">
+                        <button onclick="switchTab('generator')" class="px-8 py-4 rounded-xl bg-gold-500 hover:bg-gold-400 text-slate-950 font-bold transition-all shadow-lg flex items-center space-x-3">
+                            <i class="fa-solid fa-file-circle-plus text-lg"></i>
+                            <span>Mulai Buat Surat</span>
+                        </button>
+                        <button onclick="switchTab('profile')" class="px-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold transition-all flex items-center space-x-3">
+                            <i class="fa-solid fa-user-shield text-lg"></i>
+                            <span>Tentang Pengembang</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Grid with Enhanced Typography -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border-t-4 border-royal-600 space-y-4">
+                    <div class="w-14 h-14 rounded-2xl bg-royal-100 text-royal-700 flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-stamp"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-slate-900">Standar Kop Resmi</h3>
+                    <p class="text-slate-800 text-sm leading-relaxed font-medium">
+                        Desain kop surat dirancang sesuai kaidah persuratan resmi institusi sekolah lengkap dengan logo, identitas lembaga, dan alamat kontak yang valid.
+                    </p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border-t-4 border-gold-500 space-y-4">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-100 text-gold-700 flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-slate-900">Generator & Kustomisasi Isi</h3>
+                    <p class="text-slate-800 text-sm leading-relaxed font-medium">
+                        Sediakan berbagai templat pilihan dengan teks paragraf yang sepenuhnya dapat disunting sesuai kebutuhan mendesak Anda.
+                    </p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border-t-4 border-indigo-600 space-y-4">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-slate-900">Unduh Berkas PDF Asli</h3>
+                    <p class="text-slate-800 text-sm leading-relaxed font-medium">
+                        Fitur konversi instan berbasis html2pdf untuk menghasilkan dokumen cetak digital berkualitas tinggi siap lampirkan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Purpose Note with High Contrast Light Background -->
+            <div class="bg-white rounded-3xl p-8 sm:p-12 text-slate-900 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-300">
+                <div class="absolute right-0 top-0 w-80 h-80 bg-royal-100/50 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="space-y-4 max-w-2xl relative z-10">
+                    <span class="text-gold-700 text-xs font-extrabold uppercase tracking-widest block bg-amber-100 px-3 py-1 rounded-full w-max border border-amber-300">
+                        <i class="fa-solid fa-bullseye mr-1"></i> Tujuan & Visi Pembuatan
+                    </span>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
+                        Inovasi Administrasi Digital Sekolah <span class="text-royal-700">SMK Al-Hadiid 1 Cileungsi</span>
+                    </h2>
+                    <p class="text-slate-800 text-base sm:text-lg leading-relaxed font-medium">
+                        Web ini didedikasikan untuk meningkatkan efisiensi tata kelola surat-menyurat di lingkungan SMK Al-Hadiid 1 Cileungsi. Mengurangi kesalahan penulisan format kop dan mempercepat proses administrasi siswa maupun staf secara profesional, transparan, dan terstandarisasi.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3 text-xs font-bold text-slate-700">
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Cepat & Efisien</span>
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Standar Dinas Resmi</span>
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> Format Cetak PDF</span>
+                    </div>
+                </div>
+                <div class="relative z-10 flex-shrink-0">
+                    <button onclick="switchTab('generator')" class="whitespace-nowrap px-8 py-4 rounded-2xl bg-royal-600 hover:bg-royal-800 text-white font-bold transition-all shadow-lg flex items-center space-x-3 text-base">
+                        <span>Coba Generator Sekarang</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-generator" class="tab-content hidden space-y-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
+                <div>
+                    <h2 class="font-serif text-2xl font-bold text-slate-900">Generator & Editor Surat Resmi</h2>
+                    <p class="text-slate-700 text-sm font-medium">Pilih templat surat, sesuaikan atribut & paragraf isinya, lalu unduh sebagai PDF.</p>
+                </div>
+                <div class="flex items-center space-x-3 w-full md:w-auto">
+                    <select id="template-selector" onchange="loadTemplateData()" class="w-full md:w-72 px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-royal-600 shadow-sm">
+                        <option value="izin-sakit">Surat Perizinan Sakit / Tidak Masuk</option>
+                        <option value="libur-khusus">Surat Permohonan Izin Libur / Cuti</option>
+                        <option value="keterangan-siswa">Surat Keterangan Aktif Siswa</option>
+                        <option value="kegiatan-sekolah">Surat Pemberitahuan Kegiatan Sekolah</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Editor & Preview Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Form Input Column -->
+                <div class="lg:col-span-5 glass-card p-6 sm:p-8 rounded-3xl shadow-sm space-y-6">
+                    <h3 class="font-serif text-lg font-bold text-slate-900 border-b border-slate-300 pb-3 flex items-center">
+                        <i class="fa-solid fa-sliders text-royal-600 mr-2"></i> Form Atribut & Kustomisasi Isi
+                    </h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nomor Surat</label>
+                            <input type="text" id="input-nomor" value="045/AL-HADIID-1/V/2026" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Lampiran</label>
+                            <input type="text" id="input-lampiran" value="1 Berkas" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Perihal</label>
+                            <input type="text" id="input-perihal" value="Permohonan Izin Tidak Masuk Sekolah" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Pengirim / Siswa</label>
+                            <input type="text" id="input-nama" value="Muhammad Farhan Al-Fatih" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Kelas / Jurusan</label>
+                                <input type="text" id="input-kelas" value="XI Teknik Komputer & Jaringan" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">NIS</label>
+                                <input type="text" id="input-nis" value="222310089" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Ditujukan Kepada</label>
+                            <input type="text" id="input-tujuan" value="Yth. Bapak Kepala Sekolah SMK Al-Hadiid 1 Cileungsi" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Isi / Paragraf Utama Surat (Dapat Diganti)</label>
+                            <textarea id="input-isi" rows="4" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900 leading-relaxed">Dengan hormat, sehubungan dengan kondisi kesehatan saya yang kurang membaik berdasarkan diagnosa dokter (sakit demam berdarah), maka melalui surat ini saya bermaksud memohon izin tidak dapat mengikuti kegiatan belajar mengajar di sekolah terhitung mulai tanggal 1 Oktober 2026 sampai dengan 3 Oktober 2026.</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Tempat & Tanggal Surat</label>
+                            <input type="text" id="input-tanggal" value="Cileungsi, 1 Oktober 2026" oninput="updatePreview()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-royal-600 focus:outline-none bg-white text-slate-900">
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex gap-3">
+                        <button onclick="downloadPDF()" id="pdf-btn" class="flex-1 py-3.5 rounded-xl bg-royal-600 text-white font-bold hover:bg-royal-800 transition-all shadow-md flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-file-pdf text-lg"></i>
+                            <span>Unduh File PDF Resmi</span>
+                        </button>
+                        <button onclick="resetForm()" class="px-4 py-3.5 rounded-xl bg-slate-300 text-slate-800 hover:bg-slate-400 font-bold transition-all" title="Reset Form">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Preview Column -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Pratinjau Dokumen Real-Time</span>
+                        <span class="text-xs text-emerald-700 font-bold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+                            <i class="fa-solid fa-circle-check mr-1"></i> Format Standar Dinas Siap Cetak
+                        </span>
+                    </div>
+
+                    <!-- Printable Surat Container (Target for PDF Generation) -->
+                    <div id="printable-area" class="bg-white text-slate-900 p-8 sm:p-12 rounded-3xl shadow-xl border border-slate-300 font-serif leading-relaxed relative block">
+                        
+                        <div>
+                            <!-- KOP SURAT RESMI -->
+                            <div class="border-b-4 border-double border-slate-900 pb-4 mb-6 flex items-center justify-between">
+                                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-royal-900 text-white flex items-center justify-center text-3xl font-bold flex-shrink-0">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <div class="text-center px-2 flex-grow">
+                                    <h4 class="text-xs font-sans uppercase font-bold tracking-widest text-slate-700">Yayasan Pendidikan Al-Hadiid</h4>
+                                    <h2 class="text-xl sm:text-2xl font-bold uppercase tracking-wide text-royal-900">SMK AL-HADIID 1 CILEUNGSI</h2>
+                                    <p class="text-[11px] font-sans font-semibold text-slate-700 mt-0.5">
+                                        Bidang Keahlian: Teknologi Informasi, Teknik Otomotif & Bisnis Manajemen
+                                    </p>
+                                    <p class="text-[10px] font-sans text-slate-600 mt-1">
+                                        Jl. Raya Cileungsi - Jonggol KM. 3, Cileungsi, Kab. Bogor, Jawa Barat 16820
+                                    </p>
+                                    <p class="text-[10px] font-sans text-slate-600">
+                                        Email: info@smkalhadiid1.sch.id | Telp: (021) 8234567
+                                    </p>
+                                </div>
+                                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gold-500 text-slate-950 flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                </div>
+                            </div>
+
+                            <!-- NOMOR & PERIHAL -->
+                            <div class="font-sans text-sm mb-6 flex justify-between items-start text-slate-900">
+                                <div class="space-y-1">
+                                    <table class="table-auto">
+                                        <tr>
+                                            <td class="font-bold pr-4 align-top">Nomor</td>
+                                            <td class="align-top">: <span id="prev-nomor">045/AL-HADIID-1/V/2026</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-bold pr-4 align-top">Lampiran</td>
+                                            <td class="align-top">: <span id="prev-lampiran">1 Berkas</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-bold pr-4 align-top">Perihal</td>
+                                            <td class="align-top">: <span id="prev-perihal" class="font-bold underline">Permohonan Izin Tidak Masuk Sekolah</span></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="text-right">
+                                    <p id="prev-tanggal" class="font-semibold">Cileungsi, 1 Oktober 2026</p>
+                                    <p class="mt-4 font-bold">Kepada Yth,</p>
+                                    <p id="prev-tujuan" class="text-xs sm:text-sm font-semibold max-w-[200px] ml-auto">Bapak Kepala Sekolah SMK Al-Hadiid 1 Cileungsi</p>
+                                    <p class="text-xs font-semibold">di Tempat</p>
+                                </div>
+                            </div>
+
+                            <!-- ISI SURAT -->
+                            <div class="space-y-4 text-justify text-sm sm:text-base my-6 text-slate-900">
+                                <p class="font-semibold">Dengan hormat,</p>
+                                <p>Yang bertanda tangan di bawah ini selaku siswa/siswi SMK Al-Hadiid 1 Cileungsi:</p>
+                                
+                                <div class="pl-6 space-y-1 font-sans text-sm font-semibold text-slate-900">
+                                    <p><strong>Nama Lengkap :</strong> <span id="prev-nama">Muhammad Farhan Al-Fatih</span></p>
+                                    <p><strong>NIS / Kelas :</strong> <span id="prev-nis">222310089</span> / <span id="prev-kelas">XI Teknik Komputer & Jaringan</span></p>
+                                </div>
+
+                                <p id="prev-isi" class="leading-relaxed whitespace-pre-line">
+                                    Dengan hormat, sehubungan dengan kondisi kesehatan saya yang kurang membaik berdasarkan diagnosa dokter (sakit demam berdarah), maka melalui surat ini saya bermaksud memohon izin tidak dapat mengikuti kegiatan belajar mengajar di sekolah terhitung mulai tanggal 1 Oktober 2026 sampai dengan 3 Oktober 2026.
+                                </p>
+
+                                <p class="leading-relaxed">
+                                    Demikian surat permohonan izin ini saya sampaikan dengan sebenar-benarnya. Atas perhatian, izin, dan pengertian Bapak/Ibu guru, saya ucapkan terima kasih.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- TANDA TANGAN (Menggunakan margin-top besar sebagai pengganti space-between) -->
+                        <div class="pt-8 font-sans text-sm flex justify-between items-end mt-24 text-slate-900">
+                            <div class="text-center">
+                                <p class="text-xs font-semibold text-slate-600 mb-16">Mengetahui Orang Tua / Wali,</p>
+                                <p class="font-bold underline uppercase">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-semibold mb-16">Hormat Saya,</p>
+                                <p id="prev-nama-ttd" class="font-bold underline uppercase">Muhammad Farhan Al-Fatih</p>
+                                <p class="text-xs font-semibold text-slate-600">NIS. <span id="prev-nis-ttd">222310089</span></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-templates" class="tab-content hidden space-y-8">
+            <div class="bg-slate-950 p-8 rounded-3xl text-white border border-slate-800 shadow-xl">
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold mb-2">Galeri Templat Kop Resmi Sekolah</h2>
+                <p class="text-slate-100 text-sm max-w-2xl font-normal">
+                    Berbagai macam variasi kop surat resmi yang digunakan oleh SMK Al-Hadiid 1 Cileungsi untuk keperluan kedinasan, OSIS, kesiswaan, hingga hubungan industri.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Template Card 1 -->
+                <div class="glass-card p-6 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
+                    <div class="border-b-4 border-double border-slate-900 pb-3 flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-royal-900 text-white flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div class="text-center px-2">
+                            <h4 class="text-[9px] font-sans uppercase font-bold tracking-widest text-slate-800">Yayasan Pendidikan Al-Hadiid</h4>
+                            <h3 class="text-xs sm:text-sm font-bold uppercase text-royal-950 font-serif">SMK AL-HADIID 1 CILEUNGSI</h3>
+                            <p class="text-[9px] font-sans text-slate-700">Jl. Raya Cileungsi - Jonggol KM. 3</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-gold-500 text-slate-950 flex items-center justify-center text-xs font-bold">
+                            <i class="fa-solid fa-shield"></i>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Kop Surat Utama / Dinas</h4>
+                            <p class="text-xs text-slate-800 font-medium">Digunakan untuk surat keluar resmi sekolah & kedinasan.</p>
+                        </div>
+                        <button onclick="selectTemplatePreset('izin-sakit')" class="px-4 py-2 rounded-xl bg-royal-600 text-white text-xs font-bold hover:bg-royal-800 transition-all shadow-sm">
+                            Gunakan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Card 2 -->
+                <div class="glass-card p-6 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
+                    <div class="border-b-4 border-double border-gold-600 pb-3 flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-gold-500 text-slate-950 flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="text-center px-2">
+                            <h4 class="text-[9px] font-sans uppercase font-bold tracking-widest text-gold-800">OSIS & Ekstrakurikuler</h4>
+                            <h3 class="text-xs sm:text-sm font-bold uppercase text-royal-950 font-serif">PENGURUS OSIS SMK AL-HADIID 1</h3>
+                            <p class="text-[9px] font-sans text-slate-700">Kec. Cileungsi, Kab. Bogor</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-royal-900 text-white flex items-center justify-center text-xs font-bold">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Kop Surat Organisasi OSIS</h4>
+                            <p class="text-xs text-slate-800 font-medium">Digunakan untuk proposal kegiatan & acara siswa.</p>
+                        </div>
+                        <button onclick="selectTemplatePreset('kegiatan-sekolah')" class="px-4 py-2 rounded-xl bg-royal-600 text-white text-xs font-bold hover:bg-royal-800 transition-all shadow-sm">
+                            Gunakan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Card 3 -->
+                <div class="glass-card p-6 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
+                    <div class="border-b-2 border-slate-800 pb-3 flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-emerald-800 text-white flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                        <div class="text-center px-2">
+                            <h4 class="text-[9px] font-sans uppercase font-bold tracking-widest text-emerald-900">Bursa Kerja Khusus (BKK)</h4>
+                            <h3 class="text-xs sm:text-sm font-bold uppercase text-royal-950 font-serif">SMK AL-HADIID 1 CILEUNGSI</h3>
+                            <p class="text-[9px] font-sans text-slate-700">Penyaluran Kerja & Magang Industri</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
+                            <i class="fa-solid fa-handshake"></i>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Kop Surat BKK / Hubin</h4>
+                            <p class="text-xs text-slate-800 font-medium">Digunakan untuk surat pengantar PKL dan magang siswa.</p>
+                        </div>
+                        <button onclick="selectTemplatePreset('keterangan-siswa')" class="px-4 py-2 rounded-xl bg-royal-600 text-white text-xs font-bold hover:bg-royal-800 transition-all shadow-sm">
+                            Gunakan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Card 4 -->
+                <div class="glass-card p-6 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
+                    <div class="border-b-2 border-dashed border-royal-700 pb-3 flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-amber-600 text-white flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <div class="text-center px-2">
+                            <h4 class="text-[9px] font-sans uppercase font-bold tracking-widest text-amber-900">Kurikulum & Akademik</h4>
+                            <h3 class="text-xs sm:text-sm font-bold uppercase text-royal-950 font-serif">SMK AL-HADIID 1 CILEUNGSI</h3>
+                            <p class="text-[9px] font-sans text-slate-700">Ujian, Rapor & Legalisir</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-royal-900 text-white flex items-center justify-center text-xs font-bold">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Kop Surat Akademik</h4>
+                            <p class="text-xs text-slate-800 font-medium">Digunakan untuk surat keterangan aktif & transkrip.</p>
+                        </div>
+                        <button onclick="selectTemplatePreset('libur-khusus')" class="px-4 py-2 rounded-xl bg-royal-600 text-white text-xs font-bold hover:bg-royal-800 transition-all shadow-sm">
+                            Gunakan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-profile" class="tab-content hidden space-y-10">
+            <!-- Profile Hero Card -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-tr from-slate-950 via-royal-950 to-indigo-950 text-white p-8 sm:p-12 shadow-2xl border border-slate-800">
+                <div class="absolute right-0 top-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                    <div class="relative">
+                        <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-3xl bg-gradient-to-tr from-gold-500 to-amber-600 p-1 shadow-2xl">
+                            <div class="w-full h-full rounded-[22px] bg-slate-900 flex items-center justify-center overflow-hidden">
+                                <i class="fa-solid fa-user-tie text-6xl sm:text-7xl text-gold-400"></i>
+                            </div>
+                        </div>
+                        <span class="absolute -bottom-3 right-4 bg-emerald-500 text-slate-950 text-xs font-bold px-3 py-1 rounded-full shadow-md border border-slate-900">
+                            <i class="fa-solid fa-code mr-1"></i> Lead Developer
+                        </span>
+                    </div>
+
+                    <div class="space-y-4 text-center lg:text-left flex-grow">
+                        <div class="inline-flex items-center space-x-2 bg-royal-900 px-4 py-1.5 rounded-full text-xs font-bold text-gold-400 border border-royal-700 shadow-sm">
+                            <i class="fa-solid fa-school"></i>
+                            <span>SMK AL-HADIID 1 CILEUNGSI</span>
+                        </div>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                            Devin Aldorian Fauzandy
+                        </h2>
+                        <div class="flex flex-wrap justify-center lg:justify-start gap-4 text-sm font-semibold text-slate-200">
+                            <span class="flex items-center"><i class="fa-solid fa-cake-candles text-gold-400 mr-2"></i> 11 Januari 2009</span>
+                            <span class="flex items-center"><i class="fa-solid fa-location-dot text-gold-400 mr-2"></i> Cileungsi, Bogor</span>
+                        </div>
+                        <p class="text-slate-200 text-sm sm:text-base leading-relaxed font-normal max-w-2xl pt-2">
+                            "Membangun ekosistem digital bukan sekadar merangkai baris kode, melainkan mendedikasikan ketelitian, estetika, dan dedikasi tinggi untuk menciptakan mahakarya teknologi yang bermanfaat bagi kemajuan institusi."
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Bio & Introduction Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Kata Pengantar & Tujuan Web -->
+                <div class="glass-card p-8 rounded-3xl space-y-6 shadow-sm border border-slate-300">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-royal-100 text-royal-700 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-gold-700 uppercase tracking-wider">Kata Pengantar & Visi</span>
+                            <h3 class="font-serif text-xl font-bold text-slate-900">Latar Belakang & Tujuan Web</h3>
+                        </div>
+                    </div>
+                    <p class="text-slate-800 text-sm leading-relaxed text-justify font-medium">
+                        Web Generator Kop Surat & Administrasi Sekolah ini dirancang dan dikembangkan secara profesional sebagai bentuk dedikasi dalam mendigitalisasi serta menyeragamkan standar surat-menyurat resmi di lingkungan <strong>SMK Al-Hadiid 1 Cileungsi</strong>.
+                    </p>
+                    <p class="text-slate-800 text-sm leading-relaxed text-justify font-medium">
+                        Tujuan utama dari platform ini adalah meminimalisir kesalahan format tata naskah dinas sekolah, menghemat waktu pembuatan dokumen perizinan maupun keterangan, serta menyajikan antarmuka web berstandar tinggi yang elegan, resmi, dan sangat mudah dioperasikan oleh civitas akademika.
+                    </p>
+                </div>
+
+                <!-- Profil Resmi & Kompetensi -->
+                <div class="glass-card p-8 rounded-3xl space-y-6 shadow-sm border border-slate-300">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 text-gold-700 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-fingerprint"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-gold-700 uppercase tracking-wider">Identitas & Keahlian</span>
+                            <h3 class="font-serif text-xl font-bold text-slate-900">Profil Resmi Pengembang</h3>
+                        </div>
+                    </div>
+                    <ul class="space-y-3 text-sm text-slate-800 font-medium">
+                        <li class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="font-bold text-slate-600">Nama Lengkap</span>
+                            <span class="font-bold text-slate-900">Devin Aldorian Fauzandy</span>
+                        </li>
+                        <li class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="font-bold text-slate-600">Tempat, Tanggal Lahir</span>
+                            <span class="font-bold text-slate-900">11 Januari 2009</span>
+                        </li>
+                        <li class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="font-bold text-slate-600">Instansi Pendidikan</span>
+                            <span class="font-bold text-royal-700">SMK AL-HADIID 1 CILEUNGSI</span>
+                        </li>
+                        <li class="flex justify-between items-center py-2">
+                            <span class="font-bold text-slate-600">Keahlian Utama</span>
+                            <span class="font-bold text-slate-900">Web Engineering & UI/UX Design</span>
+                        </li>
+                    </ul>
+                    <div class="pt-2">
+                        <div class="p-4 rounded-2xl bg-royal-50 border border-royal-200 text-royal-900 text-xs italic font-bold text-center">
+                            "Kecemerlangan bukanlah sebuah kebetulan, melainkan hasil dari kerja keras, disiplin, dan inovasi tanpa henti."
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-950 text-white border-t border-slate-800 mt-16 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gold-500 to-amber-600 flex items-center justify-center text-slate-950 font-bold">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h3 class="font-serif font-bold text-white tracking-wide">SMK AL-HADIID 1 CILEUNGSI</h3>
+                    <p class="text-xs text-slate-400 font-medium">Portal Resmi Administrasi & Kop Surat Digital</p>
+                </div>
+            </div>
+            <div class="text-center md:text-right text-xs text-slate-400 space-y-1 font-medium">
+                <p>&copy; 2026 <strong>Devin Aldorian Fauzandy</strong>. Seluruh Hak Cipta Dilindungi.</p>
+                <p>Dibuat dengan dedikasi tinggi dan standar profesional.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) {
+                activeTab.classList.remove('hidden');
+            }
+
+            // Update navigation button styles
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.classList.remove('bg-white', 'text-royal-900', 'shadow-sm');
+                btn.classList.add('text-slate-700');
+            });
+
+            const currentBtn = document.getElementById(`nav-${tabId}`);
+            if (currentBtn) {
+                currentBtn.classList.remove('text-slate-700');
+                currentBtn.classList.add('bg-white', 'text-royal-900', 'shadow-sm');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toggle Mobile Navigation Drawer
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Template Presets Data
+        const templatesData = {
+            'izin-sakit': {
+                nomor: '045/AL-HADIID-1/V/2026',
+                lampiran: '1 Berkas',
+                perihal: 'Permohonan Izin Tidak Masuk Sekolah (Sakit)',
+                nama: 'Muhammad Farhan Al-Fatih',
+                nis: '222310089',
+                kelas: 'XI Teknik Komputer & Jaringan',
+                tujuan: 'Yth. Bapak Kepala Sekolah SMK Al-Hadiid 1 Cileungsi',
+                isi: 'Dengan hormat, sehubungan dengan kondisi kesehatan saya yang kurang membaik berdasarkan diagnosa dokter (sakit demam berdarah), maka melalui surat ini saya bermaksud memohon izin tidak dapat mengikuti kegiatan belajar mengajar di sekolah terhitung mulai tanggal 1 Oktober 2026 sampai dengan 3 Oktober 2026.',
+                tanggal: 'Cileungsi, 1 Oktober 2026'
+            },
+            'libur-khusus': {
+                nomor: '046/AL-HADIID-1/V/2026',
+                lampiran: '-',
+                perihal: 'Permohonan Izin Keperluan Keluarga / Libur Khusus',
+                nama: 'Siti Aisyah Nurhaliza',
+                nis: '222310102',
+                kelas: 'XI Akuntansi & Keuangan Lembaga',
+                tujuan: 'Yth. Ibu Wali Kelas XI AKL SMK Al-Hadiid 1 Cileungsi',
+                isi: 'Dengan hormat, melalui surat ini saya selaku orang tua/wali murid memberitahukan bahwa anak kami tidak dapat hadir ke sekolah pada tanggal 2 Oktober 2026 dikarenakan harus menghadiri acara pernikahan keluarga inti di luar kota. Demikian permohonan ini kami sampaikan.',
+                tanggal: 'Cileungsi, 1 Oktober 2026'
+            },
+            'keterangan-siswa': {
+                nomor: '047/AL-HADIID-1/V/2026',
+                lampiran: '1 Lembar',
+                perihal: 'Surat Keterangan Siswa Aktif',
+                nama: 'Rizky Ramadhan',
+                nis: '222310054',
+                kelas: 'XII Teknik Kendaraan Ringan Otomotif',
+                tujuan: 'Yth. Instansi Terkait / Beasiswa Prestasi',
+                isi: 'Dengan ini menerangkan bahwa siswa yang bersangkutan benar-benar terdaftar sebagai siswa aktif di SMK Al-Hadiid 1 Cileungsi Tahun Ajaran 2025/2026 dengan berkelakuan baik dan aktif mengikuti kegiatan pembelajaran.',
+                tanggal: 'Cileungsi, 1 Oktober 2026'
+            },
+            'kegiatan-sekolah': {
+                nomor: '048/OSIS-ALHADIID/V/2026',
+                lampiran: '2 Lembar Proposal',
+                perihal: 'Pemberitahuan & Permohonan Izin Kegiatan Pentas Seni',
+                nama: 'Ahmad Zidan Al-Farizi (Ketua OSIS)',
+                nis: '222310012',
+                kelas: 'XI Desain Pemodelan & Informasi Bangunan',
+                tujuan: 'Yth. Bapak Kepala Sekolah SMK Al-Hadiid 1 Cileungsi',
+                isi: 'Dalam rangka memperingati HUT sekolah serta menyalurkan kreativitas siswa, pengurus OSIS SMK Al-Hadiid 1 Cileungsi bermaksud menyelenggarakan kegiatan Pentas Seni dan Pameran Karya Kreatif pada tanggal 15 Oktober 2026. Sehubungan dengan hal tersebut, kami memohon izin dan dukungan dari pihak sekolah.',
+                tanggal: 'Cileungsi, 1 Oktober 2026'
+            }
+        };
+
+        // Load Template Preset into Form and Preview
+        function loadTemplateData() {
+            const selector = document.getElementById('template-selector').value;
+            const data = templatesData[selector];
+            if (data) {
+                document.getElementById('input-nomor').value = data.nomor;
+                document.getElementById('input-lampiran').value = data.lampiran;
+                document.getElementById('input-perihal').value = data.perihal;
+                document.getElementById('input-nama').value = data.nama;
+                document.getElementById('input-nis').value = data.nis;
+                document.getElementById('input-kelas').value = data.kelas;
+                document.getElementById('input-tujuan').value = data.tujuan;
+                document.getElementById('input-isi').value = data.isi;
+                document.getElementById('input-tanggal').value = data.tanggal;
+                updatePreview();
+            }
+        }
+
+        function selectTemplatePreset(templateKey) {
+            document.getElementById('template-selector').value = templateKey;
+            loadTemplateData();
+            switchTab('generator');
+        }
+
+        // Real-time Preview Synchronization
+        function updatePreview() {
+            document.getElementById('prev-nomor').innerText = document.getElementById('input-nomor').value;
+            document.getElementById('prev-lampiran').innerText = document.getElementById('input-lampiran').value;
+            document.getElementById('prev-perihal').innerText = document.getElementById('input-perihal').value;
+            document.getElementById('prev-nama').innerText = document.getElementById('input-nama').value;
+            document.getElementById('prev-nis').innerText = document.getElementById('input-nis').value;
+            document.getElementById('prev-kelas').innerText = document.getElementById('input-kelas').value;
+            document.getElementById('prev-tujuan').innerText = document.getElementById('input-tujuan').value;
+            document.getElementById('prev-isi').innerText = document.getElementById('input-isi').value;
+            document.getElementById('prev-tanggal').innerText = document.getElementById('input-tanggal').value;
+            document.getElementById('prev-nama-ttd').innerText = document.getElementById('input-nama').value;
+            document.getElementById('prev-nis-ttd').innerText = document.getElementById('input-nis').value;
+        }
+
+        // True PDF Download menggunakan konfigurasi engine yang dioptimasi
+        function downloadPDF() {
+            updatePreview();
+
+            const element = document.getElementById('printable-area');
+            const pdfBtn = document.getElementById('pdf-btn');
+            const originalBtnContent = pdfBtn.innerHTML;
+            
+            // UI Feedback
+            pdfBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Sedang Memproses Dokumen...';
+            pdfBtn.disabled = true;
+
+            // Bersihkan styling yang merusak rendering PDF (shadow & border-radius)
+            // Kita simpan class aslinya untuk dikembalikan nanti
+            const originalClasses = element.className;
+            element.classList.remove('rounded-3xl', 'shadow-xl', 'border', 'border-slate-300');
+            element.classList.add('bg-white'); // Pastikan background putih solid
+
+            const opt = {
+                margin:       10, // Margin dalam milimeter
+                filename:     `Surat_Resmi_${document.getElementById('input-nama').value.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { 
+                    scale: 2, // Keseimbangan antara ketajaman dan ukuran file
+                    useCORS: true, 
+                    logging: false,
+                    // Paksa lebar render agar tidak mengikuti lebar layar mobile
+                    windowWidth: 800 
+                },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(opt).save().then(() => {
+                // Kembalikan UI state & styling semula
+                element.className = originalClasses;
+                pdfBtn.innerHTML = '<i class="fa-solid fa-circle-check text-lg"></i><span>Berhasil Diunduh</span>';
+                
+                setTimeout(() => {
+                    pdfBtn.innerHTML = originalBtnContent;
+                    pdfBtn.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error("PDF Generation Error: ", err);
+                element.className = originalClasses;
+                pdfBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-lg"></i><span>Gagal, Coba Lagi</span>';
+                pdfBtn.disabled = false;
+            });
+        }
+
+        // Reset Form Values
+        function resetForm() {
+            loadTemplateData();
+        }
+
+        // Initialize preview on load
+        window.onload = function() {
+            updatePreview();
+        };
+    </script>
+</body>
+</html>
